@@ -67,6 +67,8 @@ const { createServer } = require("http");
 const next = require("next");
 const { Server } = require("socket.io");
 const { initSocket } = require("./lib/socket");
+const cors = require("cors");
+const express = require("express");
 
 
 const mongoose = require("mongoose");
@@ -85,15 +87,36 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
-    const server = createServer((req, res) => handle(req, res));
+
+    const expressApp = express();
+
+    expressApp.use(
+        cors({
+            origin: [
+                process.env.FRONTEND_URL,
+                "http://localhost:3000"
+            ],
+            credentials: true
+        })
+    );
+
+    expressApp.all("*", (req, res) => handle(req, res));
+    const server = createServer(expressApp);
+
 
     const io = new Server(server, {
         cors: {
-            origin: process.env.NEXT_PUBLIC_SOCKET_URL,
+            origin: [
+                process.env.FRONTEND_URL,
+                "http://localhost:3000"
+            ],
+            methods: ["GET", "POST"],
             credentials: true
         },
-        maxHttpBufferSize: 1e8 // 🔥 100 MB
+        transports: ["websocket"],
+        maxHttpBufferSize: 1e8
     });
+
 
     initSocket(io);
 
@@ -221,7 +244,7 @@ app.prepare().then(() => {
 
     });
 
-    const port = process.env.PORT || 3000; 
+    const port = process.env.PORT || 3000;
     server.listen(port, "0.0.0.0", () => {
         console.log(`Server running on port ${port}`);
     });

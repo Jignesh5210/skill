@@ -600,8 +600,13 @@ export default function VideoCallPage() {
     /* ---------------- SOCKET INIT ---------------- */
     useEffect(() => {
         socketRef.current = io(
-            process.env.NEXT_PUBLIC_SOCKET_URL || window.location.origin
+            process.env.NEXT_PUBLIC_SOCKET_URL,
+            {
+                withCredentials: true,
+                transports: ["websocket"]
+            }
         );
+
 
 
         socketRef.current.on("join-error", (msg) => {
