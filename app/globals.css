@@ -1,42 +1,353 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* From Uiverse.io by Pravins01 */
+/* ===== SkillSwap Search Result Card (Uiverse Inspired) ===== */
+.skill-card {
+  background:
+    radial-gradient(at 88% 40%, #0b0b1a 0px, transparent 85%),
+    radial-gradient(at 0% 64%, #7c3aed 0px, transparent 85%),
+    radial-gradient(at 100% 99%, #ec4899 0px, transparent 85%);
+  border-radius: 1.5rem;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.6),
+    inset 0 -10px 25px rgba(255, 255, 255, 0.15);
+  transition: all 0.3s ease;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+.skill-card:hover {
+  transform: translateY(-4px) scale(1.02);
+}
+
+.skill-card h2,
+.skill-card p,
+.skill-card b {
+  color: white;
+}
+
+.skill-card img {
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.7);
+  border-color: #a855f7;
+}
+
+.skill-card button {
+  background: linear-gradient(90deg, #7c3aed, #ec4899);
+  border: none;
+  color: white;
+}
+
+
+
+
+/* ===== Glass Radio Menu (PURE PREBUILT) ===== */
+/* ===== Glass Sidebar Item (PREBUILT FEEL) ===== */
+.glass-menu-item {
+  position: relative;
+  padding: 14px 20px;
+  border-radius: 14px;
+  cursor: pointer;
+  color: #111;
+  font-weight: 700;
+  backdrop-filter: blur(14px);
+
+  box-shadow:
+    inset 1px 1px 4px rgb(255, 255, 255),
+    inset -1px -1px 6px rgba(0, 0, 0, 0.15),
+    0 8px 18px rgba(0, 0, 0, 0.15);
+
+  transition: all 0.35s cubic-bezier(0.37, 1.95, 0.66, 0.56);
+}
+
+.glass-menu-item:hover {
+  transform: translateX(6px);
+  box-shadow:
+    0 0 18px rgba(200, 200, 200, 0.6),
+    inset 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+
+/* ===== SILVER ===== */
+.glass-menu-item.glass-silver:hover {
+  background: linear-gradient(135deg, #e5e5e5, #ffffff);
+  box-shadow:
+    0 0 30px rgba(220, 220, 220, 0.9),
+    inset 0 0 14px rgba(255, 255, 255, 0.85);
+}
+
+/* ===== GOLD ===== */
+.glass-menu-item.glass-gold:hover {
+  background: linear-gradient(135deg, #ffd700, #ffcc00);
+  box-shadow:
+    0 0 32px rgba(255, 215, 0, 0.9),
+    inset 0 0 14px rgba(255, 235, 150, 0.85);
+}
+
+/* ===== PLATINUM ===== */
+.glass-menu-item.glass-blue:hover {
+  background: linear-gradient(135deg, #17cef7, #0898ff);
+  box-shadow:
+    0 0 34px rgba(0, 170, 255, 0.9),
+    inset 0 0 14px rgb(23, 178, 255);
+}
+
+/* ===== GREEN ===== */
+.glass-menu-item.glass-green:hover {
+  background: linear-gradient(135deg, #00c853, #00a844);
+  box-shadow:
+    0 0 36px rgba(0, 200, 83, 0.95),
+    inset 0 0 16px rgba(140, 255, 200, 0.9);
+}
+
+.glass-menu-item.glass-purple:hover {
+  background: linear-gradient(135deg, #9730ff, #8e1dff);
+  box-shadow:
+    0 0 36px rgb(122, 42, 252),
+    inset 0 0 16px rgba(127, 22, 255, 0.9);
+}
+
+.glass-menu-item.glass-red:hover {
+  background: linear-gradient(135deg, #ff0202, #ff0505);
+  box-shadow:
+    0 0 36px rgb(255, 0, 0),
+    inset 0 0 16px rgba(255, 6, 6, 0.9);
+}
+
+/* ===== Base Button ===== */
+.gradient-button {
+  position: relative;
+  padding: 12px 28px;
+  /* navbar-friendly */
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 9999px;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+  white-space: nowrap;
+  /* navbar me break na ho */
+}
+
+/* Hover scale (disable heavy scale on touch devices later) */
+.gradient-button:hover {
+  transform: scale(1.03);
+}
+
+/* ===== Gradient Glow ===== */
+.gradient-button::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 0deg,
+      #ff6b6b,
+      #4ecdc4,
+      #45b7d1,
+      #96ceb4,
+      #feca57,
+      #ff9ff3,
+      #ff6b6b);
+  z-index: -2;
+  filter: blur(12px);
+  transform: rotate(0deg);
+  transition: transform 1.5s ease-in-out;
+}
+
+.gradient-button:hover::before {
+  transform: rotate(180deg);
+}
+
+/* Inner background */
+.gradient-button::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background: black;
+  border-radius: 9999px;
+  z-index: -1;
+  filter: blur(4px);
+}
+
+/* ===== Gradient Text ===== */
+.gradient-text {
+  color: transparent;
+  background: conic-gradient(from 0deg,
+      #ff6b6b,
+      #4ecdc4,
+      #45b7d1,
+      #96ceb4,
+      #feca57,
+      #ff9ff3,
+      #ff6b6b);
+  background-clip: text;
+  -webkit-background-clip: text;
+  filter: hue-rotate(0deg);
+}
+
+.gradient-button:hover .gradient-text {
+  animation: hue-rotating 2s linear infinite;
+}
+
+/* Active */
+.gradient-button:active {
+  transform: scale(0.98);
+}
+
+/* ===== Animation ===== */
+@keyframes hue-rotating {
+  to {
+    filter: hue-rotate(360deg);
   }
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
+/* ========================= */
+/* 📱 Mobile Responsiveness */
+/* ========================= */
+@media (max-width: 640px) {
+  .gradient-button {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+
+  .gradient-button::before {
+    filter: blur(8px);
+  }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* 📱 Tablets */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .gradient-button {
+    padding: 10px 22px;
+    font-size: 15px;
+  }
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+/* 🖥 Desktop / Large Screens */
+@media (min-width: 1025px) {
+  .gradient-button {
+    padding: 12px 28px;
+    font-size: 16px;
+  }
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+/* 🤳 Touch Devices (Disable heavy hover effects) */
+@media (hover: none) {
+  .gradient-button:hover {
+    transform: none;
+  }
+
+  .gradient-button:hover::before {
+    transform: rotate(0deg);
+  }
+
+  .gradient-button:hover .gradient-text {
+    animation: none;
+  }
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+
+
+
+/* ===== Base Button ===== */
+.btn-donate {
+  --clr-font-main: hsla(0 0% 20% / 100);
+  --btn-bg-1: hsla(194 100% 69% / 1);
+  --btn-bg-2: hsla(217 100% 56% / 1);
+  --btn-bg-color: hsla(360 100% 100% / 1);
+  --radii: 0.6em;
+
+  cursor: pointer;
+  padding: 0.7em 1.3em;          /* navbar safe */
+  min-width: 100px;
+  min-height: 40px;
+  font-size: var(--size, 0.95rem);
+  font-weight: 500;
+
+  transition: background-position 0.8s ease, box-shadow 0.3s ease, transform 0.15s ease;
+  background-size: 280% auto;
+  background-image: linear-gradient(
+    325deg,
+    var(--btn-bg-2) 0%,
+    var(--btn-bg-1) 55%,
+    var(--btn-bg-2) 90%
+  );
+
+  border: none;
+  border-radius: var(--radii);
+  color: var(--btn-bg-color);
+
+  box-shadow:
+    0px 0px 16px rgba(71, 184, 255, 0.45),
+    0px 4px 4px -1px rgba(58, 125, 233, 0.25),
+    inset 3px 3px 6px rgba(175, 230, 255, 0.45),
+    inset -3px -3px 6px rgba(19, 95, 216, 0.35);
+
+  white-space: nowrap;          /* navbar me text break na ho */
+}
+
+/* Hover */
+.btn-donate:hover {
+  background-position: right top;
+  transform: translateY(-1px);
+}
+
+/* Focus / Active */
+.btn-donate:is(:focus, :focus-visible, :active) {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--btn-bg-color),
+    0 0 0 5px var(--btn-bg-2);
+}
+
+/* ======================= */
+/* 📱 Mobile (small) */
+/* ======================= */
+@media (max-width: 640px) {
+  .btn-donate {
+    padding: 0.55em 1em;
+    min-width: 88px;
+    min-height: 36px;
+    font-size: 0.85rem;
+    flex:none;
+    box-shadow:
+      0px 0px 12px rgba(71, 184, 255, 0.35),
+      inset 2px 2px 5px rgba(175, 230, 255, 0.35),
+      inset -2px -2px 5px rgba(19, 95, 216, 0.3);
+  }
+}
+
+/* 📱 Tablets */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .btn-donate {
+    padding: 0.65em 1.2em;
+    font-size: 0.9rem;
+  }
+}
+
+/* 🖥 Desktop */
+@media (min-width: 1025px) {
+  .btn-donate {
+    padding: 0.75em 1.4em;
+    font-size: 1rem;
+  }
+}
+
+/* 🤳 Touch Devices (avoid hover jump) */
+@media (hover: none) {
+  .btn-donate:hover {
+    transform: none;
+  }
+}
+
+/* ♿ Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .btn-donate {
+    transition: background-position linear;
   }
 }
