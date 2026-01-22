@@ -1,277 +1,13 @@
 
 
 
-// "use client";
-
-// import { useEffect, useRef, useState } from "react";
-// import { useParams, useRouter } from "next/navigation";
-// import { io } from "socket.io-client";
-// import Navbar from "@/components/Navbar";
-
-
-// export default function VideoCallPage() {
-//     const { chatId } = useParams();
-//     const router = useRouter();
-
-//     const localVideo = useRef(null);
-//     const remoteVideo = useRef(null);
-//     const socketRef = useRef(null);
-//     const pcRef = useRef(null);
-//     const localStreamRef = useRef(null);
-
-//     const [localUser, setLocalUser] = useState("");
-//     const [remoteUser, setRemoteUser] = useState("");
-
-//     const [roomCreated, setRoomCreated] = useState(false);
-//     const [joined, setJoined] = useState(false);
-//     const [password, setPassword] = useState("");
-
-//     const [isSwapped, setIsSwapped] = useState(false);
-//     const [micOn, setMicOn] = useState(true);
-//     const [camOn, setCamOn] = useState(true);
-
-//     /* ---------------- SOCKET INIT ---------------- */
-
-//     useEffect(() => {
-//         const initSocket = async () => {
-//             const res = await fetch("/api/socket/token", {
-//                 credentials: "include",
-//             });
-
-//             if (!res.ok) {
-//                 alert("Login required");
-//                 return;
-//             }
-
-//             const data = await res.json();
-
-//             socketRef.current = io(
-//                 process.env.NEXT_PUBLIC_SOCKET_URL,
-//                 {
-//                     transports: ["polling", "websocket"],
-//                     auth: {
-//                         token: data.token
-//                     }
-//                 }
-//             );
-
-//             socketRef.current.on("join-error", (msg) => {
-//                 alert(msg);
-//                 setJoined(false);
-//             });
-
-//             socketRef.current.on("call-ended", handleEndCall);
-//         };
-
-//         initSocket();
-
-//         return () => socketRef.current?.disconnect();
-//     }, []);
-
-
-//     /* ------------- SOCKET + WEBRTC -------------- */
-//     useEffect(() => {
-//         if (!joined || !socketRef.current) return;
-
-//         socketRef.current.on("offer", async (offer) => {
-//             if (!pcRef.current) return;
-
-
-//             pcRef.current.addTransceiver("audio", { direction: "sendrecv" });
-//             pcRef.current.addTransceiver("video", { direction: "sendrecv" });
-
-//             await pcRef.current.setRemoteDescription(offer);
-
-//             const answer = await pcRef.current.createAnswer({
-//                 offerToReceiveAudio: true,
-//                 offerToReceiveVideo: true,
-//             });
-
-//             await pcRef.current.setLocalDescription(answer);
-
-//             socketRef.current.emit("answer", { roomId: chatId, answer });
-//         });
-
-
-//         socketRef.current.on("answer", async (answer) => {
-//             await pcRef.current.setRemoteDescription(answer);
-//         });
-
-//         socketRef.current.on("ice-candidate", async (candidate) => {
-//             await pcRef.current.addIceCandidate(candidate);
-//         });
-
-//         socketRef.current.on("self-user", (data) => {
-//             setLocalUser(data.name);
-//         });
-
-//         socketRef.current.on("user-name", (data) => {
-//             setRemoteUser(data.name);
-//         });
-
-
-//         socketRef.current.on("peer-ready", async () => {   // Newly added
-//             if (!pcRef.current) return;
-
-//             const offer = await pcRef.current.createOffer({
-//                 offerToReceiveAudio: true,
-//                 offerToReceiveVideo: true,
-//             });
-
-//             await pcRef.current.setLocalDescription(offer);
-
-//             socketRef.current.emit("offer", {
-//                 roomId: chatId,
-//                 offer
-//             });
-//         });
-
-
-
-
-//         return () => socketRef.current.off();
-//     }, [joined, chatId]);
-
-//     /* ---------------- CREATE ROOM ---------------- */
-//     async function createRoom() {
-//         if (!password.trim()) return alert("Password required");
-
-//         const res = await fetch("/api/video/create", {
-//             method: "POST",
-//             credentials: "include",
-//             headers: { "Content-Type": "application/json" },
-//             body: JSON.stringify({ chatId, password }),
-//         });
-
-//         const data = await res.json();
-//         if (data.success) {
-//             alert("Room created");
-//             setRoomCreated(true);
-//         } else {
-//             alert(data.message);
-//         }
-//     }
-
-//     /* ---------------- JOIN CALL ------------------ */
-//     async function joinCall() {
-//         if (!password.trim()) return alert("Password required");
-
-
-//         if (remoteVideo.current) {
-//             remoteVideo.current.muted = false;
-//             remoteVideo.current.play().catch(() => { });
-//         }
-
-
-//         socketRef.current.emit("join-video-room", {
-//             roomId: chatId,
-//             password
-//         });
-//         setJoined(true);
-
-//         // pcRef.current = new RTCPeerConnection({
-//         //     iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-//         // });  
-
-//         pcRef.current = new RTCPeerConnection({
-//             iceServers: [
-//                 { urls: "stun:stun.l.google.com:19302" },
-//                 {
-//                     urls: "turn:openrelay.metered.ca:443",
-//                     username: "openrelayproject",
-//                     credential: "openrelayproject"
-//                 }
-//             ],
-//         });
-
-//         pcRef.current.ontrack = (e) => {
-//             remoteVideo.current.srcObject = e.streams[0];
-//         };
-
-//         pcRef.current.addTransceiver("audio", { direction: "sendrecv" });
-//         pcRef.current.addTransceiver("video", { direction: "sendrecv" });
-
-
-//         const stream = await navigator.mediaDevices.getUserMedia({
-//             video: true,
-//             audio: {
-//                 echoCancellation: false,
-//                 noiseSuppression: false,
-//                 autoGainControl: false,
-//                 channelCount: 1,
-//                 sampleRate: 48000
-//             },
-
-//         });
-
-//         localStreamRef.current = stream;
-//         localVideo.current.srcObject = stream;
-
-
-
-//         // 🎙 AUDIO TRACK 
-//         stream.getAudioTracks().forEach(track => {
-//             track.enabled = true;
-//             track.contentHint = "speech";
-//             pcRef.current.addTrack(track, stream);
-//         });
-
-
-//         // 🎥 VIDEO TRACK
-//         stream.getVideoTracks().forEach(track => {
-//             pcRef.current.addTrack(track, stream);
-//         });
-
-//         socketRef.current.emit("peer-ready", { roomId: chatId });   // Newly Added
-
-//         pcRef.current.onicecandidate = (e) => {
-//             if (e.candidate) {
-//                 socketRef.current.emit("ice-candidate", {
-//                     roomId: chatId,
-//                     candidate: e.candidate,
-//                 });
-//             }
-//         };
-
-
-
-
-
-//     }
-
-//     /* ---------------- CONTROLS ------------------- */
-//     function toggleMic() {
-//         localStreamRef.current?.getAudioTracks().forEach((track) => {
-//             track.enabled = !track.enabled;
-//             setMicOn(track.enabled);
-//         });
-//     }
-
-//     function toggleCamera() {
-//         localStreamRef.current?.getVideoTracks().forEach((track) => {
-//             track.enabled = !track.enabled;
-//             setCamOn(track.enabled);
-//         });
-//     }
-
-//     function handleEndCall() {
-//         pcRef.current?.close();
-//         router.replace(`/chat/${chatId}`);
-//     }
-
-//     function endCall() {
-//         socketRef.current.emit("end-call", { roomId: chatId });
-//         handleEndCall();
-//     }
-
-
-
 "use client";
 
 import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { io } from "socket.io-client";
 import Navbar from "@/components/Navbar";
+
 
 export default function VideoCallPage() {
     const { chatId } = useParams();
@@ -295,6 +31,7 @@ export default function VideoCallPage() {
     const [camOn, setCamOn] = useState(true);
 
     /* ---------------- SOCKET INIT ---------------- */
+
     useEffect(() => {
         const initSocket = async () => {
             const res = await fetch("/api/socket/token", {
@@ -312,7 +49,9 @@ export default function VideoCallPage() {
                 process.env.NEXT_PUBLIC_SOCKET_URL,
                 {
                     transports: ["polling", "websocket"],
-                    auth: { token: data.token },
+                    auth: {
+                        token: data.token
+                    }
                 }
             );
 
@@ -325,25 +64,19 @@ export default function VideoCallPage() {
         };
 
         initSocket();
+
         return () => socketRef.current?.disconnect();
     }, []);
+
 
     /* ------------- SOCKET + WEBRTC -------------- */
     useEffect(() => {
         if (!joined || !socketRef.current) return;
 
         socketRef.current.on("offer", async (offer) => {
-            if (!pcRef.current) return;
-
             await pcRef.current.setRemoteDescription(offer);
-
-            const answer = await pcRef.current.createAnswer({
-                offerToReceiveAudio: true,
-                offerToReceiveVideo: true,
-            });
-
+            const answer = await pcRef.current.createAnswer();
             await pcRef.current.setLocalDescription(answer);
-
             socketRef.current.emit("answer", { roomId: chatId, answer });
         });
 
@@ -363,21 +96,21 @@ export default function VideoCallPage() {
             setRemoteUser(data.name);
         });
 
-        socketRef.current.on("peer-ready", async () => {
+
+        socketRef.current.on("peer-ready", async () => {   // Newly added
             if (!pcRef.current) return;
 
-            const offer = await pcRef.current.createOffer({
-                offerToReceiveAudio: true,
-                offerToReceiveVideo: true,
-            });
-
+            const offer = await pcRef.current.createOffer();
             await pcRef.current.setLocalDescription(offer);
 
             socketRef.current.emit("offer", {
                 roomId: chatId,
-                offer,
+                offer
             });
         });
+
+
+
 
         return () => socketRef.current.off();
     }, [joined, chatId]);
@@ -406,37 +139,22 @@ export default function VideoCallPage() {
     async function joinCall() {
         if (!password.trim()) return alert("Password required");
 
-        // 🔓 mobile autoplay unlock (no UI change)
+
         if (remoteVideo.current) {
             remoteVideo.current.muted = false;
             remoteVideo.current.play().catch(() => { });
         }
 
+
         socketRef.current.emit("join-video-room", {
             roomId: chatId,
-            password,
+            password
         });
         setJoined(true);
 
         pcRef.current = new RTCPeerConnection({
-            iceServers: [
-                { urls: "stun:stun.l.google.com:19302" },
-                {
-                    urls: "turn:openrelay.metered.ca:443",
-                    username: "openrelayproject",
-                    credential: "openrelayproject",
-                },
-            ],
+            iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
         });
-
-        // 🔥 ontrack EARLY
-        pcRef.current.ontrack = (e) => {
-            remoteVideo.current.srcObject = e.streams[0];
-        };
-
-        // 🔥 transceivers ONLY ONCE
-        pcRef.current.addTransceiver("audio", { direction: "sendrecv" });
-        pcRef.current.addTransceiver("video", { direction: "sendrecv" });
 
         const stream = await navigator.mediaDevices.getUserMedia({
             video: true,
@@ -445,24 +163,30 @@ export default function VideoCallPage() {
                 noiseSuppression: false,
                 autoGainControl: false,
                 channelCount: 1,
-                sampleRate: 48000,
+                sampleRate: 48000
             },
+
         });
 
         localStreamRef.current = stream;
         localVideo.current.srcObject = stream;
 
-        // 🔊 force mic enabled
-        stream.getAudioTracks().forEach((track) => {
-            track.enabled = true;
-            track.contentHint = "speech";
-            pcRef.current.addTrack(track, stream);
-        });
-        setMicOn(true);
 
-        stream.getVideoTracks().forEach((track) => {
+
+        // 🎙 AUDIO TRACK 
+        stream.getAudioTracks().forEach(track => {
+            track.enabled = true;
+            track.contentHint = "speech"; 
             pcRef.current.addTrack(track, stream);
         });
+
+
+        // 🎥 VIDEO TRACK
+        stream.getVideoTracks().forEach(track => {
+            pcRef.current.addTrack(track, stream);
+        });
+
+        socketRef.current.emit("peer-ready", { roomId: chatId });   // Newly Added
 
         pcRef.current.onicecandidate = (e) => {
             if (e.candidate) {
@@ -473,7 +197,13 @@ export default function VideoCallPage() {
             }
         };
 
-        socketRef.current.emit("peer-ready", { roomId: chatId });
+        pcRef.current.ontrack = (e) => {
+            remoteVideo.current.srcObject = e.streams[0];
+        };
+
+
+
+
     }
 
     /* ---------------- CONTROLS ------------------- */
@@ -500,7 +230,6 @@ export default function VideoCallPage() {
         socketRef.current.emit("end-call", { roomId: chatId });
         handleEndCall();
     }
-
 
     /* ---------------- JOIN SCREEN ---------------- */
     if (!joined) {
