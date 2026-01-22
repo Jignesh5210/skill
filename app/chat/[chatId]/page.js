@@ -130,9 +130,10 @@ export default function ChatPage() {
             process.env.NEXT_PUBLIC_SOCKET_URL,
             {
                 withCredentials: true,
-                transports: ["websocket"]
+                transports: ["websocket", "polling"]   // ✅ CHANGE
             }
         );
+
 
 
 

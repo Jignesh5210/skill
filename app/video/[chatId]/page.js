@@ -603,7 +603,7 @@ export default function VideoCallPage() {
             process.env.NEXT_PUBLIC_SOCKET_URL,
             {
                 withCredentials: true,
-                transports: ["websocket"]
+                transports: ["websocket", "polling"]   // ✅ CHANGE
             }
         );
 
@@ -696,8 +696,7 @@ export default function VideoCallPage() {
 
         socketRef.current.emit("join-video-room", {
             roomId: chatId,
-            password,
-            token
+            password
         });
         setJoined(true);
 

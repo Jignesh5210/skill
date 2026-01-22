@@ -260,18 +260,13 @@ const VideoRoom = require("./models/VideoRoom");
 const jwt = require("jsonwebtoken");
 const Chat = require("./models/Chat"); // (as it was)
 
-// ❌ REMOVED NEXT.JS COMPLETELY
-// const next = require("next");
-// const dev = process.env.NODE_ENV !== "production";
-// const app = next({ dev });
-// const handle = app.getRequestHandler();
 
 // ✅ PURE HTTP SERVER
 const server = createServer();
 
 const io = new Server(server, {
     cors: {
-        origin: process.env.NEXT_PUBLIC_SOCKET_URL,
+        origin: process.env.FRONTEND_URL,
         credentials: true
     },
     maxHttpBufferSize: 1e8 // 🔥 100 MB
