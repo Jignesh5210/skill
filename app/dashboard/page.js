@@ -14,17 +14,6 @@ export default function Dashboard() {
     const [learnSkill, setLearnSkill] = useState("");
 
 
-    // const [form, setForm] = useState({
-    //     name: "",
-    //     abilities: "",
-    //     learnSkills: "",
-    //     education: "",
-    //     hobbies: "",
-    //     experience: "",
-    //     rating: 0,
-    //     image: null   // 👈 YEH ADD KAR
-    // });
-
     const [form, setForm] = useState({
         email: "",
         name: "",
@@ -56,16 +45,6 @@ export default function Dashboard() {
 
                 // ✅ Logged in
                 setUser(data.user);
-
-                // setForm({
-                //     name: data.user.name || "",
-                //     abilities: (data.user.abilities || []).join(", "),
-                //     learnSkills: (data.user.learnSkills || []).join(", "),
-                //     education: data.user.education || "",
-                //     hobbies: (data.user.hobbies || []).join(", "),
-                //     experience: data.user.experience || "",
-                //     rating: data.user.rating || 0
-                // });
 
                 setForm({
                     email: data.user.email || "",
@@ -149,168 +128,6 @@ export default function Dashboard() {
     }
 
     return (
-        // <>
-        //     <div
-        //         className="min-h-screen bg-cover bg-center relative"
-        //         style={{ backgroundImage: "url('/bg2.jpeg')" }}
-        //     >
-        //         <div className="absolute inset-0 bg-black/40"></div>
-
-        //         <div className="relative z-10">
-        //             <Navbar />
-
-        //             <div className="pt-28 min-h-screen">
-
-        //                 {/* PROFILE CARD */}
-        //                 <div className="max-w-6xl mx-auto mt-10 px-6">
-        //                     <div className="bg-white rounded-3xl shadow-2xl p-12 flex gap-16 items-center">
-
-
-        //                         <div className="relative">
-        //                             <img
-        //                                 src={user.image || "/card1.jpeg"}
-        //                                 className="w-44 h-44 rounded-full border-4 border-amber-400 object-cover"
-        //                             />
-
-        //                             {editMode && (
-        //                                 <label className="absolute bottom-2 right-2 bg-black/70 text-white px-3 py-1 rounded-full cursor-pointer text-sm">
-        //                                     Change
-        //                                     <input
-        //                                         type="file"
-        //                                         accept="image/*"
-        //                                         hidden
-        //                                         onChange={(e) =>
-        //                                             setForm({ ...form, image: e.target.files[0] })
-        //                                         }
-        //                                     />
-        //                                 </label>
-        //                             )}
-        //                         </div>
-
-
-
-        //                         <div className="grid grid-cols-[180px_1fr] gap-y-6 gap-x-12 text-2xl w-full">
-
-        //                             {[
-        //                                 ["Name", "name"],
-        //                                 ["Abilities", "abilities"],
-        //                                 ["Learn Skill", "learnSkills"],
-        //                                 ["Education", "education"],
-        //                                 ["Hobbies", "hobbies"],
-        //                                 ["Experience", "experience"]
-        //                             ].map(([label, key]) => (
-        //                                 <div key={key} className="contents">
-        //                                     <span className="text-gray-500">{label}</span>
-
-        //                                     {editMode ? (
-        //                                         <input
-        //                                             name={key}
-        //                                             value={form[key]}
-        //                                             onChange={handleChange}
-        //                                             className="border px-3 py-2 rounded"
-        //                                         />
-        //                                     ) : (
-        //                                         <span className="text-black font-semibold">{user[key]}</span>
-        //                                     )}
-        //                                 </div>
-        //                             ))}
-
-        //                             <span className="text-gray-500">Ratings</span>
-        //                             <div className=" flex justify-between items-center">
-        //                                 {editMode ? (
-        //                                     <input
-        //                                         type="number"
-        //                                         min="0"
-        //                                         max="5"
-        //                                         name="rating"
-        //                                         value={form.rating}
-        //                                         onChange={handleChange}
-        //                                         className="border px-3 py-2 rounded w-20"
-        //                                     />
-        //                                 ) : (
-        //                                     <span className="text-amber-500">
-        //                                         {"★".repeat(user.rating)}
-        //                                         {"☆".repeat(5 - user.rating)} ({user.rating}/5)
-        //                                     </span>
-        //                                 )}
-
-        //                                 {!editMode ? (
-        //                                     <button
-        //                                         onClick={() => setEditMode(true)}
-        //                                         className="bg-blue-600 text-white px-6 py-2 rounded-full hover:scale-105 transition cursor-pointer"
-        //                                     >
-        //                                         Edit Profile
-        //                                     </button>
-        //                                 ) : (
-        //                                     <button
-        //                                         onClick={saveProfile}
-        //                                         className="bg-green-600 text-white px-6 py-2 rounded-full hover:scale-105 transition cursor-pointer"
-        //                                     >
-        //                                         Save Profile
-        //                                     </button>
-        //                                 )}
-        //                             </div>
-
-        //                         </div>
-        //                     </div>
-        //                 </div>
-
-        //                 {/* SKILL SEARCH CARD */}
-        //                 <div className="max-w-3xl mx-auto mt-12 px-6 pb-16">
-        //                     <div className="bg-white rounded-3xl shadow-2xl p-10">
-
-        //                         <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">
-        //                             Find Your Skill Partner
-        //                         </h2>
-
-        //                         <div className="flex flex-col gap-6 items-center">
-        //                             <input
-        //                                 type="text"
-        //                                 placeholder="Your Skill (e.g. Editing, Java)"
-        //                                 value={mySkill}
-        //                                 onChange={(e) => setMySkill(e.target.value)}
-        //                                 className="w-full px-5 py-4 text-xl rounded-xl border text-black border-gray-300
-        //                                             focus:outline-none focus:ring-2 focus:ring-amber-400"
-        //                             />
-
-        //                             <input
-        //                                 type="text"
-        //                                 placeholder="Skill You Want to Learn (e.g. Python)"
-        //                                 value={learnSkill}
-        //                                 onChange={(e) => setLearnSkill(e.target.value)}
-        //                                 className="w-full px-5 py-4 text-xl rounded-xl border  text-black border-gray-300
-        //                                             focus:outline-none focus:ring-2 focus:ring-amber-400"
-        //                             />
-        //                         </div>
-
-        //                         <div className="flex justify-center mt-10">
-        //                             <button
-        //                                 onClick={() => {
-        //                                     if (!mySkill || !learnSkill) {
-        //                                         alert("Please enter both skills");
-        //                                         return;
-        //                                     }
-
-        //                                     router.push(
-        //                                         `/searchResult?mySkill=${encodeURIComponent(mySkill)}&learnSkill=${encodeURIComponent(learnSkill)}`
-        //                                     );
-        //                                 }}
-        //                                 className="bg-blue-600 text-white text-xl font-semibold px-12 py-4 rounded-full
-        //                                             transition-all duration-300 ease-in-out
-        //                                           hover:bg-blue-700 hover:scale-105 hover:shadow-xl"
-        //                             >
-        //                                 Search
-        //                             </button>
-        //                         </div>
-
-        //                     </div>
-        //                 </div>
-
-        //             </div>
-        //         </div>
-        //     </div>
-        // </>
-
 
         <>
             <div

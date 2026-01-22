@@ -102,12 +102,98 @@
 
 
 
+// import { NextResponse } from "next/server";
+// import { connectDB } from "@/lib/db";
+// import User from "@/models/User";
+// import { verifyToken } from "@/lib/jwt";
+// import fs from "fs";
+// import path from "path";
+
+// export async function PUT(req) {
+//   try {
+//     const token = req.cookies.get("token")?.value;
+//     if (!token) {
+//       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+//     }
+
+//     const decoded = verifyToken(token);
+//     await connectDB();
+
+//     // ✅ FIRST: formData banaya
+//     const formData = await req.formData();
+
+//     // ✅ THEN: email nikala
+//     const newEmail = formData.get("email");
+
+//     // ✅ DUPLICATE EMAIL CHECK
+//     if (newEmail) {
+//       const exists = await User.findOne({
+//         email: newEmail,
+//         _id: { $ne: decoded.id }
+//       });
+
+//       if (exists) {
+//         return NextResponse.json(
+//           { message: "Email already in use" },
+//           { status: 400 }
+//         );
+//       }
+//     }
+
+//     // ✅ UPDATE DATA
+//     const updateData = {
+//       email: newEmail,
+//       name: formData.get("name"),
+//       education: formData.get("education"),
+//       experience: formData.get("experience"),
+//       // rating: Number(formData.get("rating")),
+//       abilities: JSON.parse(formData.get("abilities")),
+//       learnSkills: JSON.parse(formData.get("learnSkills")),
+//       hobbies: JSON.parse(formData.get("hobbies"))
+//     };
+
+//     // ✅ IMAGE HANDLE
+//     const image = formData.get("image");
+
+//     if (image && image.name) {
+//       const bytes = await image.arrayBuffer();
+//       const buffer = Buffer.from(bytes);
+
+//       const uploadDir = path.join(process.cwd(), "public/uploads");
+//       if (!fs.existsSync(uploadDir)) {
+//         fs.mkdirSync(uploadDir);
+//       }
+
+//       const fileName = `user_${decoded.id}${path.extname(image.name)}`;
+//       const filePath = path.join(uploadDir, fileName);
+
+//       fs.writeFileSync(filePath, buffer);
+//       updateData.image = `/uploads/${fileName}`;
+//     }
+
+//     const user = await User.findByIdAndUpdate(decoded.id, updateData, {
+//       new: true
+//     });
+
+//     return NextResponse.json({ user });
+
+//   } catch (err) {
+//     console.error("UPDATE ERROR:", err);
+//     return NextResponse.json(
+//       { message: "Update failed" },
+//       { status: 500 }
+//     );
+//   }
+// }
+
+
+
+
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import { verifyToken } from "@/lib/jwt";
-import fs from "fs";
-import path from "path";
+import cloudinary from "@/lib/cloudinary";
 
 export async function PUT(req) {
   try {
@@ -119,16 +205,22 @@ export async function PUT(req) {
     const decoded = verifyToken(token);
     await connectDB();
 
-    // ✅ FIRST: formData banaya
     const formData = await req.formData();
 
-    // ✅ THEN: email nikala
-    const newEmail = formData.get("email");
+    /* ---------------- BASIC FIELDS ---------------- */
+    const email = formData.get("email");
+    const name = formData.get("name");
+    const education = formData.get("education");
+    const experience = formData.get("experience");
 
-    // ✅ DUPLICATE EMAIL CHECK
-    if (newEmail) {
+    const abilities = JSON.parse(formData.get("abilities") || "[]");
+    const learnSkills = JSON.parse(formData.get("learnSkills") || "[]");
+    const hobbies = JSON.parse(formData.get("hobbies") || "[]");
+
+    /* ---------------- DUPLICATE EMAIL CHECK ---------------- */
+    if (email) {
       const exists = await User.findOne({
-        email: newEmail,
+        email,
         _id: { $ne: decoded.id }
       });
 
@@ -140,40 +232,41 @@ export async function PUT(req) {
       }
     }
 
-    // ✅ UPDATE DATA
+    /* ---------------- UPDATE OBJECT ---------------- */
     const updateData = {
-      email: newEmail,
-      name: formData.get("name"),
-      education: formData.get("education"),
-      experience: formData.get("experience"),
-      // rating: Number(formData.get("rating")),
-      abilities: JSON.parse(formData.get("abilities")),
-      learnSkills: JSON.parse(formData.get("learnSkills")),
-      hobbies: JSON.parse(formData.get("hobbies"))
+      email,
+      name,
+      education,
+      experience,
+      abilities,
+      learnSkills,
+      hobbies
     };
 
-    // ✅ IMAGE HANDLE
+    /* ---------------- IMAGE (CLOUDINARY) ---------------- */
     const image = formData.get("image");
 
     if (image && image.name) {
       const bytes = await image.arrayBuffer();
       const buffer = Buffer.from(bytes);
 
-      const uploadDir = path.join(process.cwd(), "public/uploads");
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir);
-      }
+      const base64 = `data:${image.type};base64,${buffer.toString("base64")}`;
 
-      const fileName = `user_${decoded.id}${path.extname(image.name)}`;
-      const filePath = path.join(uploadDir, fileName);
+      const uploadRes = await cloudinary.uploader.upload(base64, {
+        folder: "skillswap/users",
+        public_id: `user_${decoded.id}`,
+        overwrite: true
+      });
 
-      fs.writeFileSync(filePath, buffer);
-      updateData.image = `/uploads/${fileName}`;
+      updateData.image = uploadRes.secure_url;
     }
 
-    const user = await User.findByIdAndUpdate(decoded.id, updateData, {
-      new: true
-    });
+    /* ---------------- DB UPDATE ---------------- */
+    const user = await User.findByIdAndUpdate(
+      decoded.id,
+      updateData,
+      { new: true }
+    );
 
     return NextResponse.json({ user });
 
