@@ -91,16 +91,15 @@ app.prepare().then(() => {
     const expressApp = express();
 
     expressApp.use(
-        cors({
-            origin: [
-                process.env.FRONTEND_URL,
-                "http://localhost:3000"
-            ],
-            credentials: true
-        })
+        cors: {
+        origin: "https://skill-kappa.vercel.app",
+        methods: ["GET", "POST"],
+        credentials: true,
+    }
+
     );
 
-    expressApp.all("*", (req, res) => handle(req, res));
+    expressApp.all("/*", (req, res) => handle(req, res));
     const server = createServer(expressApp);
 
 
