@@ -262,7 +262,10 @@ const Chat = require("./models/Chat"); // (as it was)
 
 
 // ✅ PURE HTTP SERVER
-const server = createServer();
+const server = createServer((req, res) => {
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("OK");
+});
 
 const io = new Server(server, {
     cors: {
@@ -381,7 +384,7 @@ io.on("connection", (socket) => {
 });
 
 // ✅ DIFFERENT PORT FROM NEXT
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 10000;
 
 server.listen(PORT, "0.0.0.0", () => {
     console.log(`Socket server running on port ${PORT}`);
