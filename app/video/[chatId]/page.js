@@ -31,39 +31,6 @@ export default function VideoCallPage() {
     const [camOn, setCamOn] = useState(true);
 
     /* ---------------- SOCKET INIT ---------------- */
-    // useEffect(() => {
-    //     // socketRef.current = io(
-    //     //     process.env.NEXT_PUBLIC_SOCKET_URL,
-    //     //     {
-    //     //         withCredentials: true,
-    //     //         transports: ["polling", "websocket"]
-
-    //     //     }
-    //     // );
-
-    //     socketRef.current = io(
-    //         process.env.NEXT_PUBLIC_SOCKET_URL,
-    //         {
-    //             withCredentials: true,
-    //             transports: ["polling", "websocket"],
-    //             auth: {
-    //                 token: Cookies.get("token") // 👈 IMPORTANT
-    //             }
-    //         }
-    //     );
-
-
-
-    //     socketRef.current.on("join-error", (msg) => {
-    //         alert(msg);
-    //         setJoined(false);
-    //     });
-
-    //     socketRef.current.on("call-ended", handleEndCall);
-
-    //     return () => socketRef.current.disconnect();
-    // }, []);
-
 
     useEffect(() => {
         const initSocket = async () => {
@@ -184,15 +151,30 @@ export default function VideoCallPage() {
 
         const stream = await navigator.mediaDevices.getUserMedia({
             video: true,
-            audio: true,
+            audio: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: true,
+            },
         });
 
         localStreamRef.current = stream;
         localVideo.current.srcObject = stream;
 
-        stream.getTracks().forEach((track) =>
-            pcRef.current.addTrack(track, stream)
-        );
+
+
+        // 🎙 AUDIO TRACK 
+        stream.getAudioTracks().forEach(track => {
+            track.enabled = true;
+            pcRef.current.addTrack(track, stream);
+        });
+
+        // 🎥 VIDEO TRACK
+        stream.getVideoTracks().forEach(track => {
+            pcRef.current.addTrack(track, stream);
+        });
+
+        socketRef.current.emit("peer-ready", { roomId: chatId });   // Newly Added
 
         pcRef.current.onicecandidate = (e) => {
             if (e.candidate) {
@@ -205,9 +187,15 @@ export default function VideoCallPage() {
 
         pcRef.current.ontrack = (e) => {
             remoteVideo.current.srcObject = e.streams[0];
+            remoteVideo.current.muted = false;
+
+            remoteVideo.current.play().catch(() => {
+                console.log("Autoplay blocked, tap required");
+            });
         };
 
-        socketRef.current.emit("peer-ready", { roomId: chatId });  // Newly Added
+
+
     }
 
     /* ---------------- CONTROLS ------------------- */
