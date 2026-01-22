@@ -126,6 +126,11 @@ export default function ChatPage() {
 
     // 🔌 Socket setup
     useEffect(() => {
+
+        console.log(
+            "SOCKET URL USED BY FRONTEND 👉",
+            process.env.NEXT_PUBLIC_SOCKET_URL
+        );
         socketRef.current = io(
             process.env.NEXT_PUBLIC_SOCKET_URL,
             {
@@ -133,6 +138,8 @@ export default function ChatPage() {
                 transports: ["websocket", "polling"]   // ✅ CHANGE
             }
         );
+
+
 
 
 
