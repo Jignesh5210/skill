@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { io } from "socket.io-client";
 import Navbar from "@/components/Navbar";
-import Cookies from "js-cookie";
+
 
 export default function VideoCallPage() {
     const { chatId } = useParams();
@@ -31,38 +31,76 @@ export default function VideoCallPage() {
     const [camOn, setCamOn] = useState(true);
 
     /* ---------------- SOCKET INIT ---------------- */
+    // useEffect(() => {
+    //     // socketRef.current = io(
+    //     //     process.env.NEXT_PUBLIC_SOCKET_URL,
+    //     //     {
+    //     //         withCredentials: true,
+    //     //         transports: ["polling", "websocket"]
+
+    //     //     }
+    //     // );
+
+    //     socketRef.current = io(
+    //         process.env.NEXT_PUBLIC_SOCKET_URL,
+    //         {
+    //             withCredentials: true,
+    //             transports: ["polling", "websocket"],
+    //             auth: {
+    //                 token: Cookies.get("token") // 👈 IMPORTANT
+    //             }
+    //         }
+    //     );
+
+
+
+    //     socketRef.current.on("join-error", (msg) => {
+    //         alert(msg);
+    //         setJoined(false);
+    //     });
+
+    //     socketRef.current.on("call-ended", handleEndCall);
+
+    //     return () => socketRef.current.disconnect();
+    // }, []);
+
+
     useEffect(() => {
-        // socketRef.current = io(
-        //     process.env.NEXT_PUBLIC_SOCKET_URL,
-        //     {
-        //         withCredentials: true,
-        //         transports: ["polling", "websocket"]
+        const initSocket = async () => {
+            const res = await fetch("/api/socket/token", {
+                credentials: "include",
+            });
 
-        //     }
-        // );
-
-        socketRef.current = io(
-            process.env.NEXT_PUBLIC_SOCKET_URL,
-            {
-                withCredentials: true,
-                transports: ["polling", "websocket"],
-                auth: {
-                    token: Cookies.get("token") // 👈 IMPORTANT
-                }
+            if (!res.ok) {
+                alert("Login required");
+                return;
             }
-        );
 
+            const data = await res.json();
 
+            socketRef.current = io(
+                process.env.NEXT_PUBLIC_SOCKET_URL,
+                {
+                    transports: ["polling", "websocket"],
+                    auth: {
+                        token: data.token
+                    }
+                }
+            );
 
-        socketRef.current.on("join-error", (msg) => {
-            alert(msg);
-            setJoined(false);
-        });
+            socketRef.current.on("join-error", (msg) => {
+                alert(msg);
+                setJoined(false);
+            });
 
-        socketRef.current.on("call-ended", handleEndCall);
+            socketRef.current.on("call-ended", handleEndCall);
+        };
 
-        return () => socketRef.current.disconnect();
+        initSocket();
+
+        return () => socketRef.current?.disconnect();
     }, []);
+
 
     /* ------------- SOCKET + WEBRTC -------------- */
     useEffect(() => {
