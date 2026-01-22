@@ -134,11 +134,6 @@ export default function VideoCallPage() {
     async function joinCall() {
         if (!password.trim()) return alert("Password required");
 
-        const token = document.cookie
-            .split("; ")
-            .find(c => c.startsWith("token="))
-            ?.split("=")[1];
-
         socketRef.current.emit("join-video-room", {
             roomId: chatId,
             password
