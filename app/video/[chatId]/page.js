@@ -139,6 +139,13 @@ export default function VideoCallPage() {
     async function joinCall() {
         if (!password.trim()) return alert("Password required");
 
+        
+        if (remoteVideo.current) {
+            remoteVideo.current.muted = false;
+            remoteVideo.current.play().catch(() => { });
+        }
+
+
         socketRef.current.emit("join-video-room", {
             roomId: chatId,
             password
@@ -187,12 +194,8 @@ export default function VideoCallPage() {
 
         pcRef.current.ontrack = (e) => {
             remoteVideo.current.srcObject = e.streams[0];
-            remoteVideo.current.muted = false;
-
-            remoteVideo.current.play().catch(() => {
-                console.log("Autoplay blocked, tap required");
-            });
         };
+
 
 
 
