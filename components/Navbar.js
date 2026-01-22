@@ -172,27 +172,6 @@ export default function Navbar() {
     const router = useRouter();
 
 
-    // useEffect(() => {
-    //     const socket = io();
-
-    //     const fetchCount = async () => {
-    //         const res = await fetch("/api/notification/my", {
-    //             credentials: "include",
-    //             cache: "no-store"
-    //         });
-    //         const data = await res.json();
-    //         setNotificationCount(data.notifications?.length || 0);
-    //     };
-
-    //     fetchCount();
-
-    //     socket.emit("join-notification", { userId: "self" });
-
-    //     socket.on("new-notification", fetchCount);
-
-    //     return () => socket.disconnect();
-    // }, []);
-
     useEffect(() => {
         let socket;
 
@@ -209,7 +188,14 @@ export default function Navbar() {
                 if (!meData?.user?._id) return;
 
                 // ✅ Logged in → proceed
-                socket = io();
+                socket = io(
+                    process.env.NEXT_PUBLIC_SOCKET_URL,
+                    {
+                        withCredentials: true,
+                        transports: ["websocket", "polling"]
+                    }
+                );
+
 
                 const fetchCount = async () => {
                     const res = await fetch("/api/notification/my", {
@@ -249,7 +235,7 @@ export default function Navbar() {
 
             window.location.href = "/";
             alert("Logged out successfully ✅");
-            
+
 
 
         } catch (err) {
@@ -271,137 +257,6 @@ export default function Navbar() {
 
 
     return (
-        // <>
-        //     <nav className="bg-black shadow-xl shadow-black fixed top-0 text-white left-0 w-full z-50">
-        //         <div className="max-w-full mx-auto flex  items-center p-4 relative z-50">
-
-        //             {/* LEFT - Logo */}
-        //             <div
-        //                 onClick={() => goTo("/dashboard")}
-        //                 className="text-3xl font-bold tracking-wide cursor-pointer"
-        //             >
-        //                 Logo
-        //             </div>
-
-        //             {/* CENTER - Welcome Text */}
-        //             <div className="text-3xl font-semibold">
-        //                 <button>VideoBox</button>
-        //             </div>
-
-        //              <div className=" text-3xl font-semibold">
-        //              <button>ChatBox</button>
-        //             </div>
-
-        //             <div>
-        //                 <img src="/bell.png" alt="Bell icon" width={30} />
-        //             </div>
-
-        //             {/* RIGHT - Signup & Menu */}
-        //             <div className="ml-auto flex items-center gap-12">
-        //                 <div
-        //                     onClick={navigateSignup}
-        //                     className="text-3xl font-medium cursor-pointer hover:underline"
-        //                 >
-        //                     SignUp
-        //                 </div>
-
-        //                 <div
-        //                     onClick={() => setOpenMenu(true)}
-        //                     className="text-3xl cursor-pointer bg-white"
-        //                 >
-        //                     <img src="/menu.png" alt="" width={40} />
-        //                 </div>
-        //             </div>
-        //         </div>
-
-        //         {/* Overlay */}
-        //         {openMenu && (
-        //             <div
-        //                 onClick={() => setOpenMenu(false)}
-        //                 className="fixed inset-0 bg-black/60 backdrop-blur-md z-40"
-        //             />
-        //         )}
-
-        //         {/* Half Sidebar */}
-        //         <div
-        //             className={`fixed top-0 right-0 h-full w-1/2 bg-black z-50 transform transition-transform duration-300
-        //             ${openMenu ? "translate-x-0" : "translate-x-full"}`}
-        //         >
-        //             {/* Top Bar */}
-        //             <div className="flex items-center justify-between p-6 border-b relative">
-
-        //                 {/* Logout */}
-        //                 <div
-        //                     onClick={logout}
-        //                     className="text-2xl text-white font-bold cursor-pointer hover:underline"
-        //                 >
-        //                     Logout
-        //                 </div>
-
-        //                 {/* Line */}
-        //                 <div className="w-full bg-white absolute top-20 left-0 h-1"></div>
-
-        //                 {/* Close */}
-        //                 <div
-        //                     onClick={() => setOpenMenu(false)}
-        //                     className="text-2xl text-white cursor-pointer"
-        //                 >
-        //                     ✕
-        //                 </div>
-        //             </div>
-
-        //             {/* Sidebar Content */}
-        //             <div className="p-6 space-y-4">
-
-        //                 <p
-        //                     onClick={() => goTo("/")}
-        //                     className="glass-menu-item glass-silver text-2xl"
-        //                 >
-        //                     Home
-        //                 </p>
-
-        //                 <p
-        //                     onClick={() => goTo("/dashboard")}
-        //                     className="glass-menu-item glass-gold text-2xl"
-        //                 >
-        //                     Profile
-        //                 </p>
-
-        //                 <p
-        //                     onClick={() => {
-        //                         // agar user chat page pe hai
-        //                         if (pathname.startsWith("/chat/")) {
-        //                             const chatId = pathname.split("/chat/")[1];
-        //                             goTo(`/video/${chatId}`);
-        //                         } else {
-        //                             alert("Open a chat first to start video call");
-        //                             setOpenMenu(false);
-        //                         }
-        //                     }}
-        //                     className="glass-menu-item glass-platinum text-2xl"
-        //                 >
-        //                     Video Box
-        //                 </p>
-
-
-        //                 <p
-        //                     onClick={() => goTo("/chats")}
-        //                     className="glass-menu-item glass-blue text-2xl"
-        //                 >
-        //                     Chats
-        //                 </p>
-
-        //                 <p
-        //                     onClick={() => goTo("/notification")}
-        //                     className="glass-menu-item glass-green text-2xl"
-        //                 >
-        //                     Notifications
-        //                 </p>
-
-        //             </div>
-        //         </div>
-        //     </nav>
-        // </>
 
         <>
             <nav
@@ -518,7 +373,7 @@ export default function Navbar() {
                     {/* Sidebar Items */}
                     <div className="p-6 space-y-4 bg-black min-h-screen relative overflow-y-auto">
 
-                         <p
+                        <p
                             onClick={navigateSignup}
                             className=" w-12 btn-donate"
                         >
@@ -566,7 +421,7 @@ export default function Navbar() {
                             Help
                         </p>
 
-                       
+
 
 
                     </div>
