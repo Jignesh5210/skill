@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { io } from "socket.io-client";
 import Navbar from "@/components/Navbar";
+import Cookies from "js-cookie";
 
 export default function VideoCallPage() {
     const { chatId } = useParams();
@@ -31,12 +32,23 @@ export default function VideoCallPage() {
 
     /* ---------------- SOCKET INIT ---------------- */
     useEffect(() => {
+        // socketRef.current = io(
+        //     process.env.NEXT_PUBLIC_SOCKET_URL,
+        //     {
+        //         withCredentials: true,
+        //         transports: ["polling", "websocket"]
+
+        //     }
+        // );
+
         socketRef.current = io(
             process.env.NEXT_PUBLIC_SOCKET_URL,
             {
                 withCredentials: true,
-                transports: ["polling", "websocket"]
-                
+                transports: ["polling", "websocket"],
+                auth: {
+                    token: Cookies.get("token") // 👈 IMPORTANT
+                }
             }
         );
 

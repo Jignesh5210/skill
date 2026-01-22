@@ -316,11 +316,7 @@ io.on("connection", (socket) => {
     // =====================
     socket.on("join-video-room", async ({ roomId, password }) => {
         try {
-            const cookie = socket.request.headers.cookie || "";
-            const token = cookie
-                .split("; ")
-                .find(c => c.startsWith("token="))
-                ?.split("=")[1];
+            const token = socket.handshake.auth?.token;
 
             if (!token) {
                 socket.emit("join-error", "Login required");
