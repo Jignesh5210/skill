@@ -91,22 +91,20 @@ app.prepare().then(() => {
     const expressApp = express();
 
     expressApp.use(
-        cors: {
-        origin: "https://skill-kappa.vercel.app",
-        methods: ["GET", "POST"],
-        credentials: true,
-    }
-
+        cors({
+            origin: "https://skill-kappa.vercel.app",
+            methods: ["GET", "POST"],
+            credentials: true,
+        })
     );
 
-    expressApp.all("/*", (req, res) => handle(req, res));
-    const server = createServer(expressApp);
 
+    const server = createServer((req, res) => handle(req, res));
 
     const io = new Server(server, {
         cors: {
             origin: [
-                process.env.FRONTEND_URL,
+                "https://skill-kappa.vercel.app",
                 "http://localhost:3000"
             ],
             methods: ["GET", "POST"],
@@ -164,13 +162,9 @@ app.prepare().then(() => {
         //     socket.to(roomId).emit("user-joined-call");
         // });
 
-        socket.on("join-video-room", async ({ roomId, password }) => {
+        socket.on("join-video-room", async ({ roomId, password, token }) => {
             try {
-                const cookie = socket.request.headers.cookie || "";
-                const token = cookie
-                    .split("; ")
-                    .find(c => c.startsWith("token="))
-                    ?.split("=")[1];
+                
 
                 if (!token) {
                     socket.emit("join-error", "Login required");
