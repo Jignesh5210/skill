@@ -381,7 +381,7 @@ io.on("connection", (socket) => {
 });
 
 // ✅ DIFFERENT PORT FROM NEXT
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT;
 
 server.listen(PORT, "0.0.0.0", () => {
     console.log(`Socket server running on port ${PORT}`);
