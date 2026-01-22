@@ -1,85 +1,4 @@
-// "use client";
 
-// import { useEffect, useState, useRef } from "react";
-// import { useParams } from "next/navigation";
-// import { io } from "socket.io-client";
-// import Navbar from "@/components/Navbar";
-
-// export default function ChatPage() {
-//   const { chatId } = useParams();
-//   const socketRef = useRef(null);
-
-//   const [message, setMessage] = useState("");
-//   const [messages, setMessages] = useState([]);
-
-//   useEffect(() => {
-//     socketRef.current = io("http://localhost:3000");
-
-//     socketRef.current.emit("join-chat", { chatId });
-
-//     socketRef.current.on("receive-message", (msg) => {
-//       setMessages(prev => [...prev, msg]);
-//     });
-
-//     return () => socketRef.current.disconnect();
-//   }, [chatId]);
-
-//   const sendMessage = () => {
-//     if (!message.trim()) return;
-
-//     const msg = {
-//       text: message,
-//       sender: "You",
-//       time: new Date().toLocaleTimeString()
-//     };
-
-//     setMessages(prev => [...prev, msg]);
-//     socketRef.current.emit("send-message", { chatId, message: msg });
-//     setMessage("");
-//   };
-
-//   return (
-//     <>
-//       <Navbar />
-
-//       <div className="pt-28 max-w-4xl mx-auto px-6">
-//         <h1 className="text-3xl font-bold mb-4 text-white">Chat 💬</h1>
-
-//         <div className="bg-white h-[60vh] rounded-xl p-4 overflow-y-auto shadow">
-//           {messages.map((m, i) => (
-//             <div key={i} className="mb-3">
-//               <b>{m.sender}:</b> {m.text}
-//               <div className="text-xs text-gray-500">{m.time}</div>
-//             </div>
-//           ))}
-//         </div>
-
-//         <div className="flex gap-3 mt-4">
-//           <input
-//             value={message}
-//             onChange={(e) => setMessage(e.target.value)}
-//             className="flex-1 border rounded px-4 py-2"
-//             placeholder="Type message..."
-//           />
-//           <button
-//             onClick={sendMessage}
-//             className="bg-blue-600 text-white px-6 rounded"
-//           >
-//             Send
-//           </button>
-//         </div>
-
-//         {/* VIDEO CALL BUTTON */}
-//         <a
-//           href={`/video/${chatId}`}
-//           className="inline-block mt-4 bg-green-600 text-white px-6 py-2 rounded-full"
-//         >
-//           📹 Start Video Call
-//         </a>
-//       </div>
-//     </>
-//   );
-// }
 
 "use client";
 
@@ -135,7 +54,8 @@ export default function ChatPage() {
             process.env.NEXT_PUBLIC_SOCKET_URL,
             {
                 withCredentials: true,
-                transports: ["websocket", "polling"]   // ✅ CHANGE
+                transports: ["polling", "websocket"]
+               
             }
         );
 

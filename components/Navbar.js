@@ -192,7 +192,8 @@ export default function Navbar() {
                     process.env.NEXT_PUBLIC_SOCKET_URL,
                     {
                         withCredentials: true,
-                        transports: ["websocket", "polling"]
+                        transports: ["polling", "websocket"]
+
                     }
                 );
 
