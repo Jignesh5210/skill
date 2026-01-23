@@ -48,24 +48,21 @@ export async function POST(req) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const decoded = verifyToken(token);
+    verifyToken(token);
     const { mySkill, learnSkill } = await req.json();
 
     await connectDB();
 
     const matches = await User.find({
-      _id: { $ne: decoded.id },
-
       abilities: {
         $elemMatch: {
-          $regex: `^${learnSkill}$`,
+          $regex: learnSkill.trim(),
           $options: "i"
         }
       },
-
       learnSkills: {
         $elemMatch: {
-          $regex: `^${mySkill}$`,
+          $regex: mySkill.trim(),
           $options: "i"
         }
       }
@@ -74,7 +71,7 @@ export async function POST(req) {
     return NextResponse.json({ matches });
 
   } catch (err) {
-    console.error(err);
+    console.error("MATCH ERROR:", err);
     return NextResponse.json(
       { message: "Match search failed" },
       { status: 500 }
