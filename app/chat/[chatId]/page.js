@@ -15,6 +15,7 @@ export default function ChatPage() {
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
 
+
     // 🔐 Fetch logged-in user
     useEffect(() => {
         const fetchMe = async () => {
@@ -53,9 +54,13 @@ export default function ChatPage() {
         socketRef.current = io(
             process.env.NEXT_PUBLIC_SOCKET_URL,
             {
+                // withCredentials: true,
+                // transports: ["polling", "websocket"]
+
                 withCredentials: true,
-                transports: ["polling", "websocket"]
-               
+                transports: ["websocket"],
+                upgrade: false
+
             }
         );
 
@@ -93,6 +98,14 @@ export default function ChatPage() {
     const handleFile = (e) => {
         const file = e.target.files[0];
         if (!file || !me) return;
+
+        const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+
+        if (file.size > MAX_SIZE) {
+            alert("File too large (max 5MB allowed)");
+            e.target.value = null;
+            return;
+        }
 
         const reader = new FileReader();
         reader.onload = () => {
